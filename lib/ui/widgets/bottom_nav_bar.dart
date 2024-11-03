@@ -5,10 +5,10 @@ class BottomNavBar extends StatefulWidget {
   const BottomNavBar({super.key});
 
   @override
-  _BottomNavBarState createState() => _BottomNavBarState();
+  BottomNavBarState createState() => BottomNavBarState();
 }
 
-class _BottomNavBarState extends State<BottomNavBar> {
+class BottomNavBarState extends State<BottomNavBar> {
   int _page = 0;
   final GlobalKey<CurvedNavigationBarState> _bottomNavigationKey = GlobalKey();
 
@@ -32,12 +32,14 @@ class _BottomNavBarState extends State<BottomNavBar> {
           animationDuration: const Duration(milliseconds: 600),
           onTap: (index) {
             setState(() {
-              _page = index;
+              _page =
+                  index; // this is the page that is displayed when the user clicks on the bottom navigation bar
             });
           },
           letIndexChange: (index) => true,
         ),
         body: Container(
+          // this is the body of the app which is the page that is displayed
           color: Colors.blueAccent,
           child: Center(
             child: Column(
