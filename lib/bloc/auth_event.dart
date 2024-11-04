@@ -1,4 +1,12 @@
-part of 'auth_bloc.dart';
+import 'package:meta/meta.dart';
 
 @immutable
-sealed class AuthEvent {}
+abstract class AuthEvent {
+  final Map<String, dynamic> loginResponse;
+
+  const AuthEvent({required this.loginResponse});
+}
+
+class LoginEvent extends AuthEvent {
+  const LoginEvent({required super.loginResponse});
+}

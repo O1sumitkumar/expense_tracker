@@ -1,9 +1,14 @@
+import 'package:expense_tracker/api/auth/auth_api.dart';
+import 'package:expense_tracker/bloc/auth_bloc.dart';
+import 'package:expense_tracker/bloc/auth_event.dart';
+import 'package:expense_tracker/core/navigation/app_routes.dart';
 import 'package:expense_tracker/ui/screens/auth/login_screen.dart';
 import 'package:expense_tracker/ui/widgets/auth_header.dart';
 import 'package:expense_tracker/ui/widgets/combination_text.dart';
 import 'package:expense_tracker/ui/widgets/input_widget.dart';
 import 'package:expense_tracker/utils/custom_page_route.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 
@@ -20,11 +25,15 @@ class _SignupScreenState extends State<SignupScreen> {
   bool isPasswordVisible = false;
   bool isConfirmPasswordVisible = false;
 
+  // this function is used to toggle the password visibility
   void togglePasswordVisibility() =>
       setState(() => isPasswordVisible = !isPasswordVisible);
+
+  // this function is used to toggle the confirm password visibility
   void toggleConfirmPasswordVisibility() =>
       setState(() => isConfirmPasswordVisible = !isConfirmPasswordVisible);
 
+  // this function is used to validate the confirm password
   String? validateConfirmPassword(String? value) {
     if (value == null || value.isEmpty) {
       return 'Confirm password is required';
@@ -33,6 +42,44 @@ class _SignupScreenState extends State<SignupScreen> {
       return 'Passwords do not match';
     }
     return null;
+  }
+
+  // AuthApi instance
+  final AuthApi authApi = AuthApi();
+
+  // this function is used to signup
+  Future<void> signup() async {
+    final fullName = _formKey.currentState!.fields['fullName']!.value;
+    final email = _formKey.currentState!.fields['email']!.value;
+    final password = _formKey.currentState!.fields['password']!.value;
+
+    try {
+      final response = await authApi.signup({
+        'name': fullName,
+        'email': email,
+        'password': password,
+      });
+
+      // Check if the response is a Map and contains a success indicator
+      if (response is Map<String, dynamic>) {
+        // Assuming the API returns a success field
+        if (response['success'] == true) {
+          context.read<AuthBloc>().add(LoginEvent(loginResponse: response));
+          Navigator.pushNamedAndRemoveUntil(
+              context, AppRoutes.home, (route) => false);
+        } else {
+          // Handle the case where the API indicates failure
+          throw Exception(
+              'Signup failed: ${response['message'] ?? 'Unknown error'}');
+        }
+      } else {
+        throw Exception('Unexpected response type: ${response.runtimeType}');
+      }
+    } catch (e) {
+      // Handle any errors that occur during the API call
+      print('Signup error: $e'); // Log the error
+      // Optionally show an error message to the user
+    }
   }
 
   @override
@@ -120,20 +167,20 @@ class _SignupScreenState extends State<SignupScreen> {
                         CombinationText(
                           text: "Already have an account?",
                           btnText: 'Login',
-                          onPressed: () {},
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              CustomPageRoute(
+                                page: const LoginScreen(),
+                              ),
+                            );
+                          },
                         ),
                         const SizedBox(height: 25),
                         ElevatedButton(
                           onPressed: () {
                             if (_formKey.currentState!.validate()) {
-                              print(
-                                  '${_formKey.currentState!.fields['fullName']!.value} ${_formKey.currentState!.fields['email']!.value} ${_formKey.currentState!.fields['password']!.value} ${_formKey.currentState!.fields['confirmPassword']!.value}');
-                              Navigator.push(
-                                context,
-                                CustomPageRoute(
-                                  page: const LoginScreen(),
-                                ),
-                              );
+                              signup();
                             }
                           },
                           child: const Text('Signup'),

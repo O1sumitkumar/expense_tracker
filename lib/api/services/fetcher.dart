@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'package:expense_tracker/api/endpoints.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
@@ -7,7 +6,7 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 class ApiService {
   final String baseUrl;
   final CacheManager cacheManager;
-  String? _authToken; // Variable to store the auth token
+  String? _authToken;
 
   ApiService(this.baseUrl) : cacheManager = DefaultCacheManager();
 
@@ -16,24 +15,20 @@ class ApiService {
     Map<String, dynamic>? data,
     String contentType = 'application/json',
     String method = 'GET',
-    String? bearerToken, // Add bearerToken parameter
+    String? bearerToken,
   }) async {
-    // Check for internet connection
     var connectivityResult = await (Connectivity().checkConnectivity());
     if (connectivityResult == ConnectivityResult.none) {
       throw Exception('No Internet Connection');
     }
 
-    // Set up request
-    var url = Uri.parse('${AuthEndpoints.baseUrl}$endpoint');
+    var url = Uri.parse('$baseUrl$endpoint');
     http.Response? response;
 
-    // Set up headers
     var headers = {
       'Content-Type': contentType,
       if (bearerToken != null) 'Authorization': 'Bearer $bearerToken',
-      if (_authToken != null)
-        'Authorization': 'Bearer $_authToken', // Use stored token if available
+      if (_authToken != null) 'Authorization': 'Bearer $_authToken',
     };
 
     try {
@@ -53,14 +48,10 @@ class ApiService {
           );
           break;
         case 'DELETE':
-          response = await http.delete(
-            url,
-            headers: headers,
-          );
+          response = await http.delete(url, headers: headers);
           break;
         case 'GET':
         default:
-          // Check cache first
           var cachedResponse =
               await cacheManager.getFileFromCache(url.toString());
           if (cachedResponse != null) {
@@ -68,31 +59,30 @@ class ApiService {
           }
 
           response = await http.get(url, headers: headers);
-          if (response.statusCode == 200) {
+          if (_isSuccessCode(response.statusCode)) {
             await cacheManager.putFile(url.toString(), response.bodyBytes);
           }
           break;
       }
 
-      // Handle cookies and extract the token
       _handleCookies(response);
-
       return _handleResponse(response);
     } catch (e) {
       throw Exception('Error: $e');
     }
   }
 
+  bool _isSuccessCode(int statusCode) {
+    return statusCode >= 200 && statusCode < 300;
+  }
+
   void _handleCookies(http.Response response) {
-    // Check if the response contains a 'set-cookie' header
     var cookies = response.headers['set-cookie'];
     if (cookies != null) {
-      // Extract the token from the cookies (assuming it's in the format "token=value")
-      // You may need to adjust this based on your cookie format
       var cookieParts = cookies.split(';');
       for (var part in cookieParts) {
         if (part.trim().startsWith('Authorization=')) {
-          _authToken = part.split('=')[1].trim(); // Store the token
+          _authToken = part.split('=')[1].trim();
           break;
         }
       }
@@ -100,10 +90,18 @@ class ApiService {
   }
 
   dynamic _handleResponse(http.Response response) {
-    var responseBody = jsonDecode(response.body);
+    var responseBody;
+    try {
+      responseBody = jsonDecode(response.body);
+    } catch (e) {
+      responseBody = response.body;
+    }
+
+    if (_isSuccessCode(response.statusCode)) {
+      return responseBody;
+    }
+
     switch (response.statusCode) {
-      case 200:
-        return responseBody;
       case 400:
         throw Exception(
             'Bad Request: ${responseBody['message'] ?? response.body}');
@@ -117,9 +115,10 @@ class ApiService {
         throw Exception(
             'Not Found: ${responseBody['message'] ?? response.body}');
       case 500:
-      default:
         throw Exception(
             'Server Error: ${responseBody['message'] ?? response.body}');
+      default:
+        throw Exception('Error: ${responseBody['message'] ?? response.body}');
     }
   }
 

@@ -234,4 +234,11 @@ class AppTheme {
       ),
     );
   }
+
+  // status bar background color
+  static Color _statusBarColor(BuildContext context) {
+    return Theme.of(context).brightness == Brightness.dark
+        ? Colors.black
+        : Colors.white;
+  }
 }

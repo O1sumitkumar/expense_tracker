@@ -1,6 +1,24 @@
-part of 'auth_bloc.dart';
+import 'package:meta/meta.dart';
 
 @immutable
-sealed class AuthState {}
+abstract class AuthState {
+  const AuthState();
+}
 
-final class AuthInitial extends AuthState {}
+class AuthInitial extends AuthState {}
+
+class AuthAuthenticated extends AuthState {
+  final Map<String, dynamic> loginResponse; // Store the login response
+
+  const AuthAuthenticated({required this.loginResponse});
+
+  factory AuthAuthenticated.fromJson(Map<String, dynamic> json) {
+    return AuthAuthenticated(
+      loginResponse: json['loginResponse'], // Deserialize login response
+    );
+  }
+
+  Map<String, dynamic> toJson() => {
+        'loginResponse': loginResponse, // Serialize login response
+      };
+}

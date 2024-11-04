@@ -1,10 +1,14 @@
 import 'package:expense_tracker/api/auth/auth_api.dart';
+import 'package:expense_tracker/bloc/auth_bloc.dart';
+import 'package:expense_tracker/bloc/auth_event.dart';
+import 'package:expense_tracker/core/navigation/app_routes.dart';
 import 'package:expense_tracker/ui/screens/auth/signup_screen.dart';
 import 'package:expense_tracker/ui/widgets/auth_header.dart';
 import 'package:expense_tracker/ui/widgets/combination_text.dart';
 import 'package:expense_tracker/ui/widgets/input_widget.dart';
 import 'package:expense_tracker/utils/custom_page_route.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 
@@ -31,7 +35,21 @@ class _LoginScreenState extends State<LoginScreen> {
 
     final response =
         await authApi.login({'email': email, 'password': password});
-    print(response);
+
+    // Debug: Log the type of response
+    print('Response type: ${response.runtimeType}');
+    print('Response: $response');
+
+    // Ensure response is in the correct format
+
+    if (response is Map<String, dynamic>) {
+      // set the response to the auth bloc
+      context.read<AuthBloc>().add(LoginEvent(loginResponse: response));
+      Navigator.pushNamedAndRemoveUntil(
+          context, AppRoutes.home, (route) => false);
+    } else {
+      throw Exception('Unexpected response type: ${response.runtimeType}');
+    }
   }
 
   @override

@@ -1,8 +1,8 @@
+import 'package:expense_tracker/bloc/auth_bloc.dart';
+import 'package:expense_tracker/bloc/auth_state.dart';
 import 'package:expense_tracker/config/themes/app_theme.dart';
 import 'package:expense_tracker/core/navigation/app_routes.dart';
 import 'package:expense_tracker/fitness_app/fitness_app_home_screen.dart';
-import 'package:expense_tracker/providers/counter_bloc.dart';
-import 'package:expense_tracker/ui/widgets/bottom_nav_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
@@ -27,7 +27,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => CounterBloc(),
+      create: (context) => AuthBloc(),
       child: MaterialApp(
         title: 'Expense Tracker',
         debugShowCheckedModeBanner: false,
@@ -56,28 +56,34 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   Future<void> _checkLoginStatus() async {
-    bool isLoggedIn = await _isCookieValid();
-    print("isLoggedIn=============>>>>>>>>: $isLoggedIn");
+    bool isLoggedIn = await isUserDataAvailable(context);
     if (isLoggedIn) {
       if (mounted) {
-        Navigator.pushAndRemoveUntil(
-          context,
-          MaterialPageRoute(builder: (context) => const FitnessAppHomeScreen()),
-          (route) => false,
-        );
+        Navigator.pushNamedAndRemoveUntil(
+            context, AppRoutes.home, (route) => false);
       }
     } else {
       if (mounted) {
-        Navigator.pushReplacementNamed(context, '/login');
+        Navigator.pushReplacementNamed(context, AppRoutes.login);
       }
     }
   }
 
-  Future<bool> _isCookieValid() async {
-    // Implement actual cookie validation logic here
-    // For example, check if a token exists in storage
-    // This is a placeholder for demonstration
-    return true; // Replace with actual validation logic
+  Future<bool> isUserDataAvailable(BuildContext context) async {
+    // Access the current state of AuthBloc
+    final state = context.read<AuthBloc>().state;
+
+    if (state is AuthAuthenticated) {
+      // Access the loginResponse data
+      final loginResponse = state.loginResponse;
+      print('loginResponse=============>>>>>>>>: $loginResponse');
+      // Check if loginResponse contains the necessary user data
+      // For example, check if a specific field exists
+      return loginResponse
+          .isNotEmpty; // Adjust this condition based on your data structure
+    }
+
+    return false; // Return false if the user is not authenticated
   }
 
   @override
