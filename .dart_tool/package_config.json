@@ -8,6 +8,12 @@
       "languageVersion": "3.2"
     },
     {
+      "name": "archive",
+      "rootUri": "file:///C:/Users/sumit/AppData/Local/Pub/Cache/hosted/pub.dev/archive-3.6.1",
+      "packageUri": "lib/",
+      "languageVersion": "3.0"
+    },
+    {
       "name": "args",
       "rootUri": "file:///C:/Users/sumit/AppData/Local/Pub/Cache/hosted/pub.dev/args-2.6.0",
       "packageUri": "lib/",
@@ -18,6 +24,12 @@
       "rootUri": "file:///C:/Users/sumit/AppData/Local/Pub/Cache/hosted/pub.dev/async-2.11.0",
       "packageUri": "lib/",
       "languageVersion": "2.18"
+    },
+    {
+      "name": "back_button_interceptor",
+      "rootUri": "file:///C:/Users/sumit/AppData/Local/Pub/Cache/hosted/pub.dev/back_button_interceptor-6.0.2",
+      "packageUri": "lib/",
+      "languageVersion": "2.17"
     },
     {
       "name": "bloc",
@@ -116,6 +128,12 @@
       "languageVersion": "3.3"
     },
     {
+      "name": "flutter_animate",
+      "rootUri": "file:///C:/Users/sumit/AppData/Local/Pub/Cache/hosted/pub.dev/flutter_animate-3.1.0",
+      "packageUri": "lib/",
+      "languageVersion": "2.15"
+    },
+    {
       "name": "flutter_bloc",
       "rootUri": "file:///C:/Users/sumit/AppData/Local/Pub/Cache/hosted/pub.dev/flutter_bloc-8.1.6",
       "packageUri": "lib/",
@@ -132,6 +150,12 @@
       "rootUri": "file:///C:/Users/sumit/AppData/Local/Pub/Cache/hosted/pub.dev/flutter_form_builder-9.5.0",
       "packageUri": "lib/",
       "languageVersion": "3.5"
+    },
+    {
+      "name": "flutter_hot_toast",
+      "rootUri": "file:///C:/Users/sumit/AppData/Local/Pub/Cache/hosted/pub.dev/flutter_hot_toast-0.0.3",
+      "packageUri": "lib/",
+      "languageVersion": "2.19"
     },
     {
       "name": "flutter_lints",
@@ -246,6 +270,18 @@
       "rootUri": "file:///C:/Users/sumit/AppData/Local/Pub/Cache/hosted/pub.dev/lints-5.0.0",
       "packageUri": "lib/",
       "languageVersion": "3.5"
+    },
+    {
+      "name": "loader_overlay",
+      "rootUri": "file:///C:/Users/sumit/AppData/Local/Pub/Cache/hosted/pub.dev/loader_overlay-2.3.2",
+      "packageUri": "lib/",
+      "languageVersion": "2.12"
+    },
+    {
+      "name": "lottie",
+      "rootUri": "file:///C:/Users/sumit/AppData/Local/Pub/Cache/hosted/pub.dev/lottie-2.7.0",
+      "packageUri": "lib/",
+      "languageVersion": "3.1"
     },
     {
       "name": "matcher",
@@ -548,7 +584,7 @@
       "languageVersion": "3.5"
     }
   ],
-  "generated": "2024-11-04T09:37:42.366818Z",
+  "generated": "2024-11-04T16:34:56.199946Z",
   "generator": "pub",
   "generatorVersion": "3.5.4",
   "flutterRoot": "file:///E:/liveProjects/Frontend/MobileApp/flutter/flutter",

@@ -10,6 +10,7 @@ import 'package:expense_tracker/utils/custom_page_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
+import 'package:flutter_hot_toast/flutter_hot_toast.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 
 class SignupScreen extends StatefulWidget {
@@ -53,6 +54,20 @@ class _SignupScreenState extends State<SignupScreen> {
     final email = _formKey.currentState!.fields['email']!.value;
     final password = _formKey.currentState!.fields['password']!.value;
 
+    // this is to show loader
+    context.loaderOverlay.show(
+      widget: FlutterHotToast.loading(
+        height: 70,
+        width: 280,
+        label: const Text(
+          'loading...😬',
+          style: TextStyle(
+            fontSize: 30,
+          ),
+        ),
+      ),
+    );
+
     try {
       final response = await authApi.signup({
         'name': fullName,
@@ -63,7 +78,7 @@ class _SignupScreenState extends State<SignupScreen> {
       // Check if the response is a Map and contains a success indicator
       if (response is Map<String, dynamic>) {
         // Assuming the API returns a success field
-        if (response['success'] == true) {
+        if (response['success'] == true && mounted) {
           context.read<AuthBloc>().add(LoginEvent(loginResponse: response));
           Navigator.pushNamedAndRemoveUntil(
               context, AppRoutes.home, (route) => false);
@@ -79,6 +94,10 @@ class _SignupScreenState extends State<SignupScreen> {
       // Handle any errors that occur during the API call
       print('Signup error: $e'); // Log the error
       // Optionally show an error message to the user
+    } finally {
+      if (mounted) {
+        context.loaderOverlay.hide();
+      }
     }
   }
 

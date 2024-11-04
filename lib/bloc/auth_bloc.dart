@@ -1,7 +1,6 @@
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'auth_event.dart'; // Import AuthEvent
 import 'auth_state.dart'; // Import AuthState
-import 'dart:convert'; // Import dart:convert
 
 class AuthBloc extends HydratedBloc<AuthEvent, AuthState> {
   AuthBloc() : super(AuthInitial()) {
@@ -16,6 +15,11 @@ class AuthBloc extends HydratedBloc<AuthEvent, AuthState> {
           'Parsed login response (Map): $loginResponse'); // Debug: Log parsed response
       emit(AuthAuthenticated(
           loginResponse: loginResponse)); // Pass the Map directly
+    });
+
+    // logout event
+    on<LogoutEvent>((event, emit) {
+      emit(AuthInitial());
     });
   }
 

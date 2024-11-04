@@ -2,6 +2,23 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:flutter/material.dart';
+
+class ApiException implements Exception {
+  final int statusCode;
+  final String message;
+
+  ApiException(this.statusCode, this.message);
+
+  @override
+  String toString() => 'ApiException: $statusCode - $message';
+
+  void showToast(BuildContext context) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('ApiException: $statusCode - $message')),
+    );
+  }
+}
 
 class ApiService {
   final String baseUrl;
@@ -103,22 +120,18 @@ class ApiService {
 
     switch (response.statusCode) {
       case 400:
-        throw Exception(
-            'Bad Request: ${responseBody['message'] ?? response.body}');
+        throw ApiException(400, responseBody['message'] ?? response.body);
       case 401:
-        throw Exception(
-            'Unauthorized: ${responseBody['message'] ?? response.body}');
+        throw ApiException(401, responseBody['message'] ?? response.body);
       case 403:
-        throw Exception(
-            'Forbidden: ${responseBody['message'] ?? response.body}');
+        throw ApiException(403, responseBody['message'] ?? response.body);
       case 404:
-        throw Exception(
-            'Not Found: ${responseBody['message'] ?? response.body}');
+        throw ApiException(404, responseBody['message'] ?? response.body);
       case 500:
-        throw Exception(
-            'Server Error: ${responseBody['message'] ?? response.body}');
+        throw ApiException(500, responseBody['message'] ?? response.body);
       default:
-        throw Exception('Error: ${responseBody['message'] ?? response.body}');
+        throw ApiException(
+            response.statusCode, responseBody['message'] ?? response.body);
     }
   }
 

@@ -10,3 +10,7 @@ abstract class AuthEvent {
 class LoginEvent extends AuthEvent {
   const LoginEvent({required super.loginResponse});
 }
+
+class LogoutEvent extends AuthEvent {
+  const LogoutEvent({required super.loginResponse});
+}

@@ -1,8 +1,12 @@
+import 'package:expense_tracker/bloc/auth_bloc.dart';
+import 'package:expense_tracker/bloc/auth_event.dart';
+import 'package:expense_tracker/core/navigation/app_routes.dart';
 import 'package:expense_tracker/fitness_app/ui_view/area_list_view.dart';
 import 'package:expense_tracker/fitness_app/ui_view/running_view.dart';
 import 'package:expense_tracker/fitness_app/ui_view/title_view.dart';
 import 'package:expense_tracker/fitness_app/ui_view/workout_view.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../fitness_app_theme.dart';
 
@@ -118,6 +122,15 @@ class _TrainingScreenState extends State<TrainingScreen>
     return true;
   }
 
+  Future<void> logout() async {
+    context
+        .read<AuthBloc>()
+        .add(LogoutEvent(loginResponse: {})); // Dispatch LogoutEvent
+
+    Navigator.pushNamedAndRemoveUntil(
+        context, AppRoutes.welcome, (route) => false);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -226,7 +239,28 @@ class _TrainingScreenState extends State<TrainingScreen>
                                 highlightColor: Colors.transparent,
                                 borderRadius: const BorderRadius.all(
                                     Radius.circular(32.0)),
-                                onTap: () {},
+                                onTap: () {
+                                  showDialog(
+                                    context: context,
+                                    builder: (BuildContext context) {
+                                      return AlertDialog.adaptive(
+                                        title: Text('Are you sure?'),
+                                        content: Text(
+                                            'This action will logout you from the app.'),
+                                        actions: <Widget>[
+                                          TextButton(
+                                            onPressed: () {
+                                              Navigator.of(context)
+                                                  .pop(); // Close the dialog
+                                              logout();
+                                            },
+                                            child: Text('Logout'),
+                                          ),
+                                        ],
+                                      );
+                                    },
+                                  );
+                                },
                                 child: const Center(
                                   child: Icon(
                                     Icons.keyboard_arrow_left,

@@ -2,9 +2,9 @@ import 'package:expense_tracker/bloc/auth_bloc.dart';
 import 'package:expense_tracker/bloc/auth_state.dart';
 import 'package:expense_tracker/config/themes/app_theme.dart';
 import 'package:expense_tracker/core/navigation/app_routes.dart';
-import 'package:expense_tracker/fitness_app/fitness_app_home_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_hot_toast/flutter_hot_toast.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:path_provider/path_provider.dart';
 
@@ -18,7 +18,7 @@ void main() async {
 
   HydratedBloc.storage = storage;
 
-  runApp(const MyApp());
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
@@ -26,16 +26,22 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => AuthBloc(),
-      child: MaterialApp(
-        title: 'Expense Tracker',
-        debugShowCheckedModeBanner: false,
-        initialRoute: AppRoutes.splash,
-        onGenerateRoute: AppRoutes.generateRoute,
-        theme: AppTheme.lightTheme(context),
-        darkTheme: AppTheme.darkTheme(context),
-        themeMode: ThemeMode.system,
+    return GlobalLoaderOverlay(
+      child: MultiBlocProvider(
+        providers: [
+          BlocProvider(
+            create: (BuildContext context) => AuthBloc(),
+          ),
+        ],
+        child: MaterialApp(
+          title: 'Expense Tracker',
+          debugShowCheckedModeBanner: false,
+          initialRoute: AppRoutes.splash,
+          onGenerateRoute: AppRoutes.generateRoute,
+          theme: AppTheme.lightTheme(context),
+          darkTheme: AppTheme.darkTheme(context),
+          themeMode: ThemeMode.system,
+        ),
       ),
     );
   }

@@ -10,6 +10,7 @@ import 'package:expense_tracker/utils/custom_page_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
+import 'package:flutter_hot_toast/flutter_hot_toast.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -33,22 +34,43 @@ class _LoginScreenState extends State<LoginScreen> {
     final email = _formKey.currentState!.fields['email']!.value;
     final password = _formKey.currentState!.fields['password']!.value;
 
-    final response =
-        await authApi.login({'email': email, 'password': password});
+    // // this is to show loader
+    // context.loaderOverlay.show(
+    //   widget: FlutterHotToast.loading(
+    //     height: 70,
+    //     width: 280,
+    //     label: const Text(
+    //       'loading...😬',
+    //       style: TextStyle(
+    //         fontSize: 30,
+    //       ),
+    //     ),
+    //   ),
+    // );
 
-    // Debug: Log the type of response
-    print('Response type: ${response.runtimeType}');
-    print('Response: $response');
+    try {
+      final response =
+          await authApi.login({'email': email, 'password': password});
 
-    // Ensure response is in the correct format
-
-    if (response is Map<String, dynamic>) {
-      // set the response to the auth bloc
-      context.read<AuthBloc>().add(LoginEvent(loginResponse: response));
-      Navigator.pushNamedAndRemoveUntil(
-          context, AppRoutes.home, (route) => false);
-    } else {
-      throw Exception('Unexpected response type: ${response.runtimeType}');
+      // Ensure response is in the correct format
+      if (response is Map<String, dynamic>) {
+        if (response['success'] == true && mounted) {
+          // set the response to the auth bloc
+          context.read<AuthBloc>().add(LoginEvent(loginResponse: response));
+          Navigator.pushNamedAndRemoveUntil(
+              context, AppRoutes.home, (route) => false);
+        } else {
+          throw Exception('Login failed: ${response['message']}');
+        }
+      } else {
+        throw Exception('Unexpected response type: ${response.runtimeType}');
+      }
+    } catch (e) {
+      print('Login error: $e');
+    } finally {
+      if (mounted) {
+        context.loaderOverlay.hide();
+      }
     }
   }
 

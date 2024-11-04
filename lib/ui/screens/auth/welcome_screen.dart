@@ -14,7 +14,7 @@ class WelcomeScreen extends StatelessWidget {
         child: Column(
           children: [
             AuthHeader(
-              logoPath: 'assets/icons/Logo.svg',
+              logoPath: 'assets/Logo.svg',
               onLanguagePressed: () {},
             ),
             const Spacer(),
